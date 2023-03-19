@@ -19,5 +19,9 @@ from koppers import views as kopper_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('kopper/', kopper_views.present_action),
+    path('kopper/', kopper_views.index_action),
+    path('kopper/dashboard-admin', kopper_views.dashboard_admin_action),
+    path('kopper/new-calculation', kopper_views.new_calculation_action),
+    path('kopper/add-new-ties', kopper_views.add_new_ties_action),
+    path('kopper/calculation-result', kopper_views.calculation_result_action),
 ]

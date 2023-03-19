@@ -3,7 +3,56 @@
   <component name="ChangeListManager">
     <list default="true" id="d9d26024-a23e-428a-bfb5-9ffe02102ba8" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/../.idea/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/capstone_project/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/capstone_project/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/css/capstone-2023-spring-site.webflow.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/css/normalize.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/css/webflow.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/about-pic.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/menu-icon_1menu-icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/placeholder-1.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/placeholder-3.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/portfolio-1---wide.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/portfolio-2---wide.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/portfolio-3---wide.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/portfolio-4---wide.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/portfolio-logo2x-p-130x130q80.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/portfolio-logo2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/webclip.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/images/webflow-w-small2x_1webflow-w-small@2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/js/webflow.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/work/project-1.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/work/project-2.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/work/project-3.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/static/work/project-4.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/401.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/404.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/about.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/css/capstone-2023-spring-site.webflow.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/css/normalize.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/css/webflow.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/about-pic.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/menu-icon_1menu-icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/placeholder-1.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/placeholder-3.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/portfolio-1---wide.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/portfolio-2---wide.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/portfolio-3---wide.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/portfolio-4---wide.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/portfolio-logo2x-p-130x130q80.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/portfolio-logo2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/webclip.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/images/webflow-w-small2x_1webflow-w-small@2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/js/webflow.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/styleguide.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/work/project-1.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/work/project-2.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/work/project-3.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/templates/work/project-4.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/koppers/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/koppers/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapps/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapps/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,14 +86,15 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/liujiaqi/Desktop/2023 spring/capstone project/frontend/capstone_project/koppers",
+    "last_opened_file_path": "/Users/liujiaqi/Desktop/2023 spring/capstone project/frontend/capstone_project/koppers/static",
     "list.type.of.created.stylesheet": "CSS"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/koppers" />
       <recent name="$PROJECT_DIR$/koppers/static" />
+      <recent name="$PROJECT_DIR$/koppers/templates" />
+      <recent name="$PROJECT_DIR$/koppers" />
       <recent name="$PROJECT_DIR$/koppers/templates/kopper" />
     </key>
   </component>
@@ -81,7 +131,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1679162553134</updated>
-      <workItem from="1679162575299" duration="3965000" />
+      <workItem from="1679162575299" duration="4924000" />
+      <workItem from="1679244307425" duration="2329000" />
     </task>
     <servers />
   </component>
