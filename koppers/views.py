@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import CSVUploadForm
 import csv
-from .Opt2_1D import Tie, Railcar, multicar_optimize
-
+# from .Opt2_1D import Tie, Railcar, multicar_optimize
+from optimize import optimize, Tie, Railcar
 
 # Create your views here.
 
@@ -74,10 +74,11 @@ def new_calculation_action(request):
 
 
             # todo: v 和 h 是否对应box2 和 box1
-            result = multicar_optimize(railcar_list=railcar_list, tie_list=tie_list, bundle_v=int(dropdown_box_2), bundle_h=int(dropdown_box_1),
+            result = optimize(railcar_list=railcar_list, tie_list=tie_list, bundle_v=int(dropdown_box_2), bundle_h=int(dropdown_box_1),
                                        weight_diff=0.1, tie_width=tie_width, tie_thickness=tie_thickness)
-
             print(result)
+
+
             
             # Pass the results to the template
             context = {
