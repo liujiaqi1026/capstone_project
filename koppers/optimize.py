@@ -5,6 +5,7 @@ import math
 import pandas as pd
 import numpy as np
 import copy
+import math
 
 
 ## MINLP: Mixed Integer Nonlinear Program
@@ -80,14 +81,14 @@ def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bu
     result = []
     solution1 = multicar_optimize(railcar_list, tie_list, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff)
     result.append(solution1)
-    tie_list = solution1["tie_list"]
-    railcar_list2 = copy.deepcopy(railcar_list)
-    occupied_height = solution1["occupied_height"]
-    for i in range(len(railcar_list2)):
-        railcar = railcar_list2[i]
-        railcar.railcar_height -= occupied_height[i]
-    solution2 = multicar_optimize(railcar_list2, tie_list, 1, bundle_h, tie_width, tie_thickness, weight_diff)
-    result.append(solution2)
+    # tie_list = solution1["tie_list"]
+    # railcar_list2 = copy.deepcopy(railcar_list)
+    # occupied_height = solution1["occupied_height"]
+    # for i in range(len(railcar_list2)):
+    #     railcar = railcar_list2[i]
+    #     railcar.railcar_height -= occupied_height[i]
+    # solution2 = multicar_optimize(railcar_list2, tie_list, 1, bundle_h, tie_width, tie_thickness, weight_diff)
+    # result.append(solution2)
     return result
 
 
@@ -228,7 +229,7 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
     if weight_diff > 1:
         raise Exception("Weight Difference can not be larger than 100%")
     for tie in tie_list:
-        if tie.width != tie_width or tie.thickness != tie_thickness:
+        if math.isclose(tie.width, tie_width, rel_tol=1e-9, abs_tol=1e-9) or math.isclose(tie.thickness, tie_thickness, rel_tol=1e-9, abs_tol=1e-9):
             raise Exception("All tie should have same width and thickness")
 
     m = GEKKO()
