@@ -112,14 +112,14 @@ def new_calculation_action(request):
                                          tie_list[indexOfTie].thickness,
                                          tie_list[indexOfTie].width,
                                          tie_list[indexOfTie].length,
-                                         'wait for calculation',
+                                         float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
                                          leftSideTie,
                                          '',
                                          str(int(dropdown_box_2) * int(dropdown_box_1)),
                                          tie_list[indexOfTie].thickness,
                                          tie_list[indexOfTie].width,
                                          tie_list[indexOfTie].length,
-                                         'wait for calculation',
+                                         float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
                                          rightSideTie])
 
                     # wait for the total weight and total length
