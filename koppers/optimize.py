@@ -81,14 +81,14 @@ def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bu
     result = []
     solution1 = multicar_optimize(railcar_list, tie_list, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff)
     result.append(solution1)
-    # tie_list = solution1["tie_list"]
-    # railcar_list2 = copy.deepcopy(railcar_list)
-    # occupied_height = solution1["occupied_height"]
-    # for i in range(len(railcar_list2)):
-    #     railcar = railcar_list2[i]
-    #     railcar.railcar_height -= occupied_height[i]
-    # solution2 = multicar_optimize(railcar_list2, tie_list, 1, bundle_h, tie_width, tie_thickness, weight_diff)
-    # result.append(solution2)
+    tie_list = solution1["tie_list"]
+    railcar_list2 = copy.deepcopy(railcar_list)
+    occupied_height = solution1["occupied_height"]
+    for i in range(len(railcar_list2)):
+        railcar = railcar_list2[i]
+        railcar.railcar_height -= occupied_height[i]
+    solution2 = multicar_optimize(railcar_list2, tie_list, 1, bundle_h, tie_width, tie_thickness, weight_diff)
+    result.append(solution2)
     return result
 
 
@@ -208,15 +208,19 @@ def multicar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v
     # tie_list remain
     report["tie_list"] = tie_list
     # railcar occupied height
-    occupied_height = []
+    occupied_height = [0 for _ in range(len(railcar_list))]
     for i in range(len(result)):
         for car in result[i]:
             max_side_height = 0
             for side in car:
-                h = 0
-                h += len(side)*bundle_v*tie_thickness
+                cnt = 0
+                for layer in side:
+                    if max(layer) > 0:
+                        cnt += 1
+                h = cnt*bundle_v*tie_thickness
                 max_side_height = max(max_side_height, h)
-            occupied_height.append(max_side_height)
+            # occupied_height.append(max_side_height)
+            occupied_height[i] = max_side_height
     report["occupied_height"] = occupied_height
     return report
 
@@ -229,7 +233,7 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
     if weight_diff > 1:
         raise Exception("Weight Difference can not be larger than 100%")
     for tie in tie_list:
-        if math.isclose(tie.width, tie_width, rel_tol=1e-9, abs_tol=1e-9) or math.isclose(tie.thickness, tie_thickness, rel_tol=1e-9, abs_tol=1e-9):
+        if not math.isclose(tie.width, tie_width, rel_tol=1e-9, abs_tol=1e-9) or not math.isclose(tie.thickness, tie_thickness, rel_tol=1e-9, abs_tol=1e-9):
             raise Exception("All tie should have same width and thickness")
 
     m = GEKKO()
@@ -239,6 +243,17 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
     tie_num = len(tie_list)
     car_num = len(railcar_list)
     layer_nums = [int(car.railcar_height // (bundle_v * tie_thickness + 2)) for car in railcar_list]
+
+    if layer_nums[0] == 0:
+        x = [[[[0 for tie_id in range(tie_num)]],
+              [[0 for tie_id in range(tie_num)]]]
+             for car_id in range(car_num)]
+
+
+
+        return {"obj": 0, "x": x}
+
+
     x_limit = [[[[int(railcar_list[car_id].railcar_length // tie_list[tie_id].length) for tie_id in range(tie_num)] for
                  layer_id in range(layer_nums[car_id])],
                 [[int(railcar_list[car_id].railcar_length // tie_list[tie_id].length) for tie_id in range(tie_num)] for
@@ -389,4 +404,3 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
     if not success:
         raise Exception()
     return res
-
