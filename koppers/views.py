@@ -54,26 +54,29 @@ def new_calculation_action(request):
             tie_thickness = 0
             tie_length = 0
             for index, value in enumerate(csv_data):
-                print(value)
                 if index == 0:
                     continue
 
                 # if (tie_thickness != 0 and tie_thickness != int(value[1])) or (tie_width != 0 and tie_width != int(value[0])):
                 #     return
 
-                tie_width = int(value[0])
-                tie_thickness = int(value[1])
+                tie_width = int(value[1])
+                tie_thickness = int(value[0])
                 tie_length = int(value[2])
 
                 tie_list.append(Tie(length=float(value[2]), width=float(value[1]), thickness=float(value[0]),
-                                    quantity=int(value[3]), weight_per_tie=int(text_box_6)))
+                                    quantity=int(value[3]), weight_per_tie=float(text_box_6) *
+                                                                           float(value[2]) * float(value[1])
+                                                                           * float(value[0])))
 
             railcar_list = []
             for i in range(int(text_box_1)):
-                railcar_list.append(Railcar(length=61, height=95, width=50, loading=100000))
+                railcar_list.append(Railcar(length=61, height=95, width=50, loading=10000000000000))
 
             for i in range(int(text_box_2)):
-                railcar_list.append(Railcar(length=73, height=95, width=50, loading=100000))
+                railcar_list.append(Railcar(length=73, height=95, width=50, loading=10000000000000))
+
+            railcar_list = sorted(railcar_list, key=lambda x: x.railcar_length, reverse=True)
 
             # todo: v 和 h 是否对应box2 和 box1
             result = optimize(railcar_list=railcar_list, tie_list=tie_list, bundle_v=int(dropdown_box_2),
@@ -81,7 +84,6 @@ def new_calculation_action(request):
                               weight_diff=0.1, tie_width=tie_width, tie_thickness=tie_thickness)
 
             temp = result[0]
-            print('temp: ' + str(temp))
             cars = temp['layout']
 
             # Pass the results to the template

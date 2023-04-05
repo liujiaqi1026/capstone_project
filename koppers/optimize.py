@@ -27,7 +27,8 @@ class Tie:
         self.weight_per_tie = weight_per_tie
 
     def __str__(self):
-        return "length: " + str(self.length) + " quantity: " + str(self.quantity)
+        return "length: " + str(self.length) + " width: " + str(self.width) \
+               + " thickness: " + str(self.thickness) + " quantity: " + str(self.quantity)
 
 
 class Layer:
@@ -67,6 +68,9 @@ class Railcar:
     def init(self, tie_list: List[Tie], layer_num: int):
         self.side_a.init(tie_list, layer_num)
         self.side_b.init(tie_list, layer_num)
+
+    def __str__(self):
+        return "length: " + str(self.railcar_length)
 '''
     solution = multiple_optimize(...)
     big-bundle = solution[0]
@@ -79,6 +83,7 @@ class Railcar:
 '''
 def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float, tie_thickness: float, weight_diff: float):
     result = []
+    railcar_list = sorted(railcar_list, key=lambda x: x.railcar_length, reverse=True)
     solution1 = multicar_optimize(railcar_list, tie_list, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff)
     result.append(solution1)
     tie_list = solution1["tie_list"]
@@ -233,6 +238,7 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
     if weight_diff > 1:
         raise Exception("Weight Difference can not be larger than 100%")
     for tie in tie_list:
+        print(str(tie.width) + " " + str(tie_width))
         if not math.isclose(tie.width, tie_width, rel_tol=1e-9, abs_tol=1e-9) or not math.isclose(tie.thickness, tie_thickness, rel_tol=1e-9, abs_tol=1e-9):
             raise Exception("All tie should have same width and thickness")
 
