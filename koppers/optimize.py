@@ -271,9 +271,9 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
                 [[m.Var(value=100, integer=True, lb=0, ub=x_limit[car_id][1][layer_id][tie_id]) for tie_id in
                   range(tie_num)] for layer_id in range(layer_nums[car_id])]]
                for car_id in range(car_num)]
-    m.solver_options = ['minlp_maximum_iterations 500',
+    m.solver_options = ['minlp_maximum_iterations 5000',
                         # minlp iterations with integer solution
-                        'minlp_max_iter_with_int_sol 10',
+                        'minlp_max_iter_with_int_sol 100',
                         # treat minlp as nlp
                         'minlp_as_nlp 0',
                         # nlp sub-problem max iterations
