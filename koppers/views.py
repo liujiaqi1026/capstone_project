@@ -67,14 +67,14 @@ def new_calculation_action(request):
                 tie_list.append(Tie(length=float(value[2]), width=float(value[1]), thickness=float(value[0]),
                                     quantity=int(value[3]), weight_per_tie=float(text_box_6) *
                                                                            float(value[2]) * float(value[1])
-                                                                           * float(value[0])))
+                                                                           * float(value[0]) / 12))
 
             railcar_list = []
             for i in range(int(text_box_1)):
-                railcar_list.append(Railcar(length=61, height=95, width=50, loading=10000000000000))
+                railcar_list.append(Railcar(length=60, height=110, width=50, loading=10000000000000))
 
             for i in range(int(text_box_2)):
-                railcar_list.append(Railcar(length=73, height=95, width=50, loading=10000000000000))
+                railcar_list.append(Railcar(length=73, height=110, width=50, loading=10000000000000))
 
             railcar_list = sorted(railcar_list, key=lambda x: x.railcar_length, reverse=True)
 
@@ -93,6 +93,7 @@ def new_calculation_action(request):
 
             # create the result csv file.
             writer.writerow(["ORDER"])
+            row_count = 0
             for indexOfCar, car in enumerate(cars):
                 writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam'])
                 writer.writerow([])
@@ -100,6 +101,7 @@ def new_calculation_action(request):
                 writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
 
                 for indexOfLayer, layer in enumerate(car[0][0]):
+                    row_count += 1
                     writer.writerow(['ROW' + str(indexOfLayer + 1), '', '', '', '', '', '',
                                      'ROW' + str(indexOfLayer + 1), '', '', '', '', ''])
                     writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY', '',
@@ -128,6 +130,46 @@ def new_calculation_action(request):
 
                 writer.writerow([])
 
+            writer.writerow(["small pieces: "])
+            cars = result[1]["layout"]
+
+            for indexOfCar, car in enumerate(cars):
+                writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam'])
+                writer.writerow([])
+
+                writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
+
+                for indexOfLayer, layer in enumerate(car[0][0]):
+                    row_count += 1
+                    writer.writerow(['ROW' + str(row_count), '', '', '', '', '', '',
+                                     'ROW' + str(row_count), '', '', '', '', ''])
+                    writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY', '',
+                                     'PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY'])
+
+                    for indexOfTie, leftSideTie in enumerate(layer):
+                        rightSideTie = car[0][1][indexOfLayer][indexOfTie]
+
+                        writer.writerow([str(int(dropdown_box_2)),
+                                         tie_list[indexOfTie].thickness,
+                                         tie_list[indexOfTie].width,
+                                         tie_list[indexOfTie].length,
+                                         float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
+                                         leftSideTie,
+                                         '',
+                                         str(int(dropdown_box_2)),
+                                         tie_list[indexOfTie].thickness,
+                                         tie_list[indexOfTie].width,
+                                         tie_list[indexOfTie].length,
+                                         float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
+                                         rightSideTie])
+
+                    # wait for the total weight and total length
+                    writer.writerow([])
+                    writer.writerow([])
+
+                writer.writerow([])
+
+
             csv_content = response.content.decode('utf-8')
 
             context = {
@@ -138,7 +180,7 @@ def new_calculation_action(request):
                 'text_box_5': text_box_5,
                 'text_box_6': text_box_6,
                 'csv_data': csv_data,
-                'max_loading': str(temp["load"]),
+                'max_loading': str(result[0]["load"] + result[1]["load"]),
                 'layout_result': temp["layout"],
                 'csv_content': csv_content,
             }
