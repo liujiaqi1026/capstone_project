@@ -60,9 +60,9 @@ def new_calculation_action(request):
                 # if (tie_thickness != 0 and tie_thickness != int(value[1])) or (tie_width != 0 and tie_width != int(value[0])):
                 #     return
 
-                tie_width = int(value[1])
-                tie_thickness = int(value[0])
-                tie_length = int(value[2])
+                tie_width = float(value[1])
+                tie_thickness = float(value[0])
+                # tie_length = int(value[2])
 
                 tie_list.append(Tie(length=float(value[2]), width=float(value[1]), thickness=float(value[0]),
                                     quantity=int(value[3]), weight_per_tie=float(text_box_6) *

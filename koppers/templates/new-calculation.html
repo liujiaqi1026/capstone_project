@@ -33,6 +33,10 @@
         border-radius: 4px;
         margin-bottom: 10px;
     }
+    .red {
+        color: red;
+        font-size: small;
+    }
 </style>
 
 </head>
@@ -45,10 +49,16 @@
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <label for="csv_file">Add Tie Information (Upload CSV file):</label>
+        <p class="red">Note: All input ties must have the same height and width.</p>
         <input type="file" name="csv_file" id="csv_file">
         {% if form.csv_file.errors %}
             <span style="color: red">{{ form.csv_file.errors.as_text }}</span>
         {% endif %}<br><br>
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            <strong>{{ form.errors.csv_file }}</strong>
+        </div>
+        {% endif %}
 
         <label for="text_box_6">Weight Factor of Ties:</label>
         <input type="text" name="text_box_6" id="text_box_6">

@@ -8,3 +8,11 @@ class CSVUploadForm(forms.Form):
     dropdown_box_2 = forms.ChoiceField(choices=[(i, i) for i in range(1, 7)], initial=5)
     text_box_5 = forms.CharField(required=False, label='Text Box 5', max_length=100)
     text_box_6 = forms.DecimalField(required=True) # weight factor
+
+    # Add a clean method for csv_file field to validate file format
+    def clean_csv_file(self):
+        file = self.cleaned_data.get('csv_file')
+        if file:
+            if not file.name.endswith('.csv'):
+                raise forms.ValidationError('File format must be CSV.')
+        return file
