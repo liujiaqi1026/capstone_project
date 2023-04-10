@@ -128,9 +128,9 @@ def new_calculation_action(request):
                     writer.writerow([])
                     writer.writerow([])
 
-                writer.writerow([])
-
-            writer.writerow(["small pieces: "])
+            #     writer.writerow([])
+            #
+            # writer.writerow(["small pieces: "])
             cars = result[1]["layout"]
 
             for indexOfCar, car in enumerate(cars):
