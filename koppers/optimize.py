@@ -392,6 +392,14 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
           [[int(round(layouts[car_id][1][layer_id][tie_id].VALUE[0])) for tie_id in range(tie_num)] for layer_id in
            range(layer_nums[car_id])]]
          for car_id in range(car_num)]
+
+    for car in x:
+        for j in range(len(car)):
+            car[j] = sorted(car[j], key=lambda blist: sum(tie_list[i].length * num for i, num in enumerate(blist)),
+                            reverse=True)
+
+    # 输出排序后的列表
+
     res = {"obj": m.options.OBJFCNVAL, "x": x}
 
     tie_list_copy = copy.deepcopy(tie_list)
