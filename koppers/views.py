@@ -5,6 +5,7 @@ from django.urls import reverse
 import csv
 # from .Opt2_1D import Tie, Railcar, multicar_optimize
 from .optimize import optimize, Tie, Railcar
+from datetime import datetime
 
 
 # Create your views here.
@@ -57,8 +58,8 @@ def new_calculation_action(request):
                 if index == 0:
                     continue
 
-                # if (tie_thickness != 0 and tie_thickness != int(value[1])) or (tie_width != 0 and tie_width != int(value[0])):
-                #     return
+                if int(value[3]) == 0:
+                    continue
 
                 tie_width = float(value[1])
                 tie_thickness = float(value[0])
@@ -93,6 +94,13 @@ def new_calculation_action(request):
 
             # create the result csv file.
             writer.writerow(["ORDER"])
+            writer.writerow([str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))])
+            writer.writerow([("weight factor: " + str(text_box_6))])
+            writer.writerow([("number of 60 Centerbeam: " + str(text_box_1))])
+            writer.writerow([("number of 73 Centerbeam: " + str(text_box_2))])
+            writer.writerow([("note: " + str(text_box_5))])
+            writer.writerow(["total loading: " + str(result[0]["load"] + result[1]["load"])])
+
             row_count = 0
             for indexOfCar, car in enumerate(cars):
                 writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam'])
@@ -107,8 +115,18 @@ def new_calculation_action(request):
                     writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY', '',
                                      'PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY'])
 
+                    total_left_length = 0
+                    total_right_length = 0
+                    total_left_weight = 0
+                    total_right_weight = 0
+
                     for indexOfTie, leftSideTie in enumerate(layer):
                         rightSideTie = car[0][1][indexOfLayer][indexOfTie]
+
+                        total_left_length += tie_list[indexOfTie].length * leftSideTie
+                        total_right_length += tie_list[indexOfTie].length * rightSideTie
+                        total_left_weight += float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie
+                        total_right_weight += float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie
 
                         writer.writerow([str(int(dropdown_box_2) * int(dropdown_box_1)),
                                          tie_list[indexOfTie].thickness,
@@ -124,13 +142,18 @@ def new_calculation_action(request):
                                          float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
                                          rightSideTie])
 
+                    writer.writerow(['', '', '', 'total length: ', 'total weight: ', '', '',
+                                     '', '', '', 'total length: ', 'total weight: ', ''])
+                    writer.writerow(['', '', '', total_left_length, total_left_weight, '', '',
+                                     '', '', '', total_right_length, total_right_weight, ''])
+
                     # wait for the total weight and total length
                     writer.writerow([])
                     writer.writerow([])
 
-            #     writer.writerow([])
-            #
-            # writer.writerow(["small pieces: "])
+                writer.writerow([])
+
+            writer.writerow(["small pieces: "])
             cars = result[1]["layout"]
 
             for indexOfCar, car in enumerate(cars):
@@ -146,8 +169,18 @@ def new_calculation_action(request):
                     writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY', '',
                                      'PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY'])
 
+                    total_left_length = 0
+                    total_right_length = 0
+                    total_left_weight = 0
+                    total_right_weight = 0
+
                     for indexOfTie, leftSideTie in enumerate(layer):
                         rightSideTie = car[0][1][indexOfLayer][indexOfTie]
+
+                        total_left_length += tie_list[indexOfTie].length * leftSideTie
+                        total_right_length += tie_list[indexOfTie].length * rightSideTie
+                        total_left_weight += float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie
+                        total_right_weight += float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie
 
                         writer.writerow([str(int(dropdown_box_2)),
                                          tie_list[indexOfTie].thickness,
@@ -162,6 +195,11 @@ def new_calculation_action(request):
                                          tie_list[indexOfTie].length,
                                          float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
                                          rightSideTie])
+
+                    writer.writerow(['', '', '', 'total length: ', 'total weight: ', '', '',
+                                     '', '', '', 'total length: ', 'total weight: ', ''])
+                    writer.writerow(['', '', '', total_left_length, total_left_weight, '', '',
+                                     '', '', '', total_right_length, total_right_weight, ''])
 
                     # wait for the total weight and total length
                     writer.writerow([])
