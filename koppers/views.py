@@ -84,6 +84,8 @@ def new_calculation_action(request):
                               bundle_h=int(dropdown_box_1),
                               weight_diff=0.1, tie_width=tie_width, tie_thickness=tie_thickness)
 
+            print("result的结果： ", result)
+
             temp = result[0]
             cars = temp['layout']
 
@@ -99,24 +101,19 @@ def new_calculation_action(request):
             writer.writerow([("number of 60 Centerbeam: " + str(text_box_1))])
             writer.writerow([("number of 73 Centerbeam: " + str(text_box_2))])
             writer.writerow([("note: " + str(text_box_5))])
-            writer.writerow(["total loading: " + str(result[0]["load"] + result[1]["load"])])
+            writer.writerow(["total loading: " + str(result[0]["load"])])
             writer.writerow([])
 
-            total_left_side_weight_map = {}
-            total_right_side_weight_map = {}
-
-            row_count_map = {}
             for indexOfCar, car in enumerate(cars):
                 writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam No.' + str(indexOfCar + 1)])
                 writer.writerow([])
 
                 writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
-                row_count = 0
+
                 total_left_side_weight = 0
                 total_right_side_weight = 0
 
                 for indexOfLayer, layer in enumerate(car[0][0]):
-                    row_count += 1
                     writer.writerow(['ROW' + str(indexOfLayer + 1), '', '', '', '', '', '',
                                      'ROW' + str(indexOfLayer + 1), '', '', '', '', ''])
                     writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QTY', '',
@@ -127,26 +124,32 @@ def new_calculation_action(request):
                     total_left_weight = 0
                     total_right_weight = 0
 
-                    for indexOfTie, leftSideTie in enumerate(layer):
-                        rightSideTie = car[0][1][indexOfLayer][indexOfTie]
+                    left_pcs = layer['pcs']
+
+                    for indexOfTie, leftSideTie in enumerate(layer['layer']):
+                        rightSideTie = car[0][1][indexOfLayer]['layer'][indexOfTie]
+                        right_pcs = car[0][1][indexOfLayer]['pcs']
 
                         total_left_length += tie_list[indexOfTie].length * leftSideTie
                         total_right_length += tie_list[indexOfTie].length * rightSideTie
-                        total_left_weight += float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie
-                        total_right_weight += float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie
+                        total_left_weight += left_pcs * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie
+                        total_right_weight += right_pcs * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie
 
-                        writer.writerow([str(int(dropdown_box_2) * int(dropdown_box_1)),
+                        writer.writerow([
+                                        # str(int(dropdown_box_2) * int(dropdown_box_1)),
+                                        left_pcs,
                                          tie_list[indexOfTie].thickness,
                                          tie_list[indexOfTie].width,
                                          tie_list[indexOfTie].length,
-                                         "-" if leftSideTie == 0 else float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
+                                         "-" if leftSideTie == 0 else left_pcs * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
                                          "-" if leftSideTie == 0 else leftSideTie,
                                          '',
-                                         str(int(dropdown_box_2) * int(dropdown_box_1)),
+                                         # str(int(dropdown_box_2) * int(dropdown_box_1)),
+                                        right_pcs,
                                          tie_list[indexOfTie].thickness,
                                          tie_list[indexOfTie].width,
                                          tie_list[indexOfTie].length,
-                                         "-" if rightSideTie == 0 else float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
+                                         "-" if rightSideTie == 0 else right_pcs * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
                                          "-" if rightSideTie == 0 else rightSideTie])
 
                     total_left_side_weight += total_left_weight
@@ -158,83 +161,86 @@ def new_calculation_action(request):
                                      '', '', '', total_right_length, total_right_weight, ''])
 
                     # wait for the total weight and total length
-                    writer.writerow([])
-                    writer.writerow([])
-
-                row_count_map[str(indexOfCar)] = row_count
-                total_left_side_weight_map[str(indexOfCar)] = total_left_side_weight
-                total_right_side_weight_map[str(indexOfCar)] = total_right_side_weight
-
-                writer.writerow([])
-
-            writer.writerow(["SMALL PIECES: "])
-            cars = result[1]["layout"]
-
-            for indexOfCar, car in enumerate(cars):
-                writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam No.' + str(indexOfCar + 1)])
-                writer.writerow([])
-
-                writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
-
-                row_count = row_count_map[str(indexOfCar)]
-                total_left_side_weight = total_left_side_weight_map[str(indexOfCar)]
-                total_right_side_weight = total_right_side_weight_map[str(indexOfCar)]
-
-                for indexOfLayer, layer in enumerate(car[0][0]):
-                    row_count += 1
-                    writer.writerow(['ROW' + str(row_count), '', '', '', '', '', '',
-                                     'ROW' + str(row_count), '', '', '', '', ''])
-                    writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QTY', '',
-                                     'PCS', 'TH', 'W', 'L', 'Wt', 'QTY'])
-
-                    total_left_length = 0
-                    total_right_length = 0
-                    total_left_weight = 0
-                    total_right_weight = 0
-
-                    for indexOfTie, leftSideTie in enumerate(layer):
-                        rightSideTie = car[0][1][indexOfLayer][indexOfTie]
-
-                        total_left_length += tie_list[indexOfTie].length * leftSideTie
-                        total_right_length += tie_list[indexOfTie].length * rightSideTie
-                        total_left_weight += float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie
-                        total_right_weight += float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie
-
-                        writer.writerow([str(int(dropdown_box_2)),
-                                         tie_list[indexOfTie].thickness,
-                                         tie_list[indexOfTie].width,
-                                         tie_list[indexOfTie].length,
-                                         "-" if leftSideTie == 0 else float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
-                                         "-" if leftSideTie == 0 else leftSideTie,
-                                         '',
-                                         str(int(dropdown_box_2)),
-                                         tie_list[indexOfTie].thickness,
-                                         tie_list[indexOfTie].width,
-                                         tie_list[indexOfTie].length,
-                                         "-" if rightSideTie == 0 else float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
-                                         "-" if rightSideTie == 0 else rightSideTie])
-
-                    total_left_side_weight += total_left_weight
-                    total_right_side_weight += total_right_weight
-
-                    writer.writerow(['', '', '', 'Tot.L', 'Tot.W', '', '',
-                                     '', '', '', 'Tot.L', 'Tot.W', ''])
-                    writer.writerow(['', '', '', total_left_length, total_left_weight, '', '',
-                                     '', '', '', total_right_length, total_right_weight, ''])
-
                     if indexOfLayer < len(car[0][0]) - 1:
                         writer.writerow([])
                         writer.writerow([])
-
-                row_count_map[str(indexOfCar)] = row_count
-                total_left_side_weight_map[str(indexOfCar)] = total_left_side_weight
-                total_right_side_weight_map[str(indexOfCar)] = total_right_side_weight
 
                 writer.writerow(['', '', '', '', 'SIDE 1 Tot.W', '', '',
                                  '', '', '', '', 'SIDE 2 Tot.W', ''])
                 writer.writerow(['', '', '', '', total_left_side_weight, '', '',
                                  '', '', '', '', total_right_side_weight, ''])
+
                 writer.writerow([])
+                writer.writerow([])
+
+            # writer.writerow(["SMALL PIECES: "])
+            # cars = result[1]["layout"]
+            #
+            # for indexOfCar, car in enumerate(cars):
+            #     writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam No.' + str(indexOfCar + 1)])
+            #     writer.writerow([])
+            #
+            #     writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
+            #
+            #     row_count = row_count_map[str(indexOfCar)]
+            #     total_left_side_weight = total_left_side_weight_map[str(indexOfCar)]
+            #     total_right_side_weight = total_right_side_weight_map[str(indexOfCar)]
+            #
+            #     for indexOfLayer, layer in enumerate(car[0][0]):
+            #         row_count += 1
+            #         writer.writerow(['ROW' + str(row_count), '', '', '', '', '', '',
+            #                          'ROW' + str(row_count), '', '', '', '', ''])
+            #         writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QTY', '',
+            #                          'PCS', 'TH', 'W', 'L', 'Wt', 'QTY'])
+            #
+            #         total_left_length = 0
+            #         total_right_length = 0
+            #         total_left_weight = 0
+            #         total_right_weight = 0
+            #
+            #         for indexOfTie, leftSideTie in enumerate(layer):
+            #             rightSideTie = car[0][1][indexOfLayer][indexOfTie]
+            #
+            #             total_left_length += tie_list[indexOfTie].length * leftSideTie
+            #             total_right_length += tie_list[indexOfTie].length * rightSideTie
+            #             total_left_weight += float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie
+            #             total_right_weight += float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie
+            #
+            #             writer.writerow([str(int(dropdown_box_2)),
+            #                              tie_list[indexOfTie].thickness,
+            #                              tie_list[indexOfTie].width,
+            #                              tie_list[indexOfTie].length,
+            #                              "-" if leftSideTie == 0 else float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
+            #                              "-" if leftSideTie == 0 else leftSideTie,
+            #                              '',
+            #                              str(int(dropdown_box_2)),
+            #                              tie_list[indexOfTie].thickness,
+            #                              tie_list[indexOfTie].width,
+            #                              tie_list[indexOfTie].length,
+            #                              "-" if rightSideTie == 0 else float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
+            #                              "-" if rightSideTie == 0 else rightSideTie])
+            #
+            #         total_left_side_weight += total_left_weight
+            #         total_right_side_weight += total_right_weight
+            #
+            #         writer.writerow(['', '', '', 'Tot.L', 'Tot.W', '', '',
+            #                          '', '', '', 'Tot.L', 'Tot.W', ''])
+            #         writer.writerow(['', '', '', total_left_length, total_left_weight, '', '',
+            #                          '', '', '', total_right_length, total_right_weight, ''])
+            #
+            #         if indexOfLayer < len(car[0][0]) - 1:
+            #             writer.writerow([])
+            #             writer.writerow([])
+            #
+            #     row_count_map[str(indexOfCar)] = row_count
+            #     total_left_side_weight_map[str(indexOfCar)] = total_left_side_weight
+            #     total_right_side_weight_map[str(indexOfCar)] = total_right_side_weight
+            #
+                # writer.writerow(['', '', '', '', 'SIDE 1 Tot.W', '', '',
+                #                  '', '', '', '', 'SIDE 2 Tot.W', ''])
+                # writer.writerow(['', '', '', '', total_left_side_weight, '', '',
+                #                  '', '', '', '', total_right_side_weight, ''])
+            #     writer.writerow([])
 
 
             csv_content = response.content.decode('utf-8')
@@ -247,7 +253,7 @@ def new_calculation_action(request):
                 'text_box_5': text_box_5,
                 'text_box_6': text_box_6,
                 'csv_data': csv_data,
-                'max_loading': str(result[0]["load"] + result[1]["load"]),
+                'max_loading': str(result[0]["load"]),
                 'layout_result': temp["layout"],
                 'csv_content': csv_content,
             }
