@@ -133,15 +133,15 @@ def new_calculation_action(request):
                                          tie_list[indexOfTie].thickness,
                                          tie_list[indexOfTie].width,
                                          tie_list[indexOfTie].length,
-                                         float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
-                                         leftSideTie,
+                                         "-" if leftSideTie == 0 else float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
+                                         "-" if leftSideTie == 0 else leftSideTie,
                                          '',
                                          str(int(dropdown_box_2) * int(dropdown_box_1)),
                                          tie_list[indexOfTie].thickness,
                                          tie_list[indexOfTie].width,
                                          tie_list[indexOfTie].length,
-                                         float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
-                                         rightSideTie])
+                                         "-" if rightSideTie == 0 else float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
+                                         "-" if rightSideTie == 0 else rightSideTie])
 
                     writer.writerow(['', '', '', 'Tot.L', 'Tot.W', '', '',
                                      '', '', '', 'Tot.L', 'Tot.W', ''])
@@ -187,15 +187,15 @@ def new_calculation_action(request):
                                          tie_list[indexOfTie].thickness,
                                          tie_list[indexOfTie].width,
                                          tie_list[indexOfTie].length,
-                                         float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
-                                         leftSideTie,
+                                         "-" if leftSideTie == 0 else float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie,
+                                         "-" if leftSideTie == 0 else leftSideTie,
                                          '',
                                          str(int(dropdown_box_2)),
                                          tie_list[indexOfTie].thickness,
                                          tie_list[indexOfTie].width,
                                          tie_list[indexOfTie].length,
-                                         float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
-                                         rightSideTie])
+                                         "-" if rightSideTie == 0 else float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
+                                         "-" if rightSideTie == 0 else rightSideTie])
 
                     writer.writerow(['', '', '', 'Tot.L', 'Tot.W', '', '',
                                      '', '', '', 'Tot.L', 'Tot.W', ''])
