@@ -100,10 +100,11 @@ def new_calculation_action(request):
             writer.writerow([("number of 73 Centerbeam: " + str(text_box_2))])
             writer.writerow([("note: " + str(text_box_5))])
             writer.writerow(["total loading: " + str(result[0]["load"] + result[1]["load"])])
+            writer.writerow([])
 
             row_count = 0
             for indexOfCar, car in enumerate(cars):
-                writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam'])
+                writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam No.' + str(indexOfCar + 1)])
                 writer.writerow([])
 
                 writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
@@ -112,8 +113,8 @@ def new_calculation_action(request):
                     row_count += 1
                     writer.writerow(['ROW' + str(indexOfLayer + 1), '', '', '', '', '', '',
                                      'ROW' + str(indexOfLayer + 1), '', '', '', '', ''])
-                    writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY', '',
-                                     'PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY'])
+                    writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QTY', '',
+                                     'PCS', 'TH', 'W', 'L', 'Wt', 'QTY'])
 
                     total_left_length = 0
                     total_right_length = 0
@@ -142,8 +143,8 @@ def new_calculation_action(request):
                                          float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
                                          rightSideTie])
 
-                    writer.writerow(['', '', '', 'total length: ', 'total weight: ', '', '',
-                                     '', '', '', 'total length: ', 'total weight: ', ''])
+                    writer.writerow(['', '', '', 'Tot.L', 'Tot.W', '', '',
+                                     '', '', '', 'Tot.L', 'Tot.W', ''])
                     writer.writerow(['', '', '', total_left_length, total_left_weight, '', '',
                                      '', '', '', total_right_length, total_right_weight, ''])
 
@@ -153,11 +154,11 @@ def new_calculation_action(request):
 
                 writer.writerow([])
 
-            writer.writerow(["small pieces: "])
+            writer.writerow(["SMALL PIECES: "])
             cars = result[1]["layout"]
 
             for indexOfCar, car in enumerate(cars):
-                writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam'])
+                writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam No.' + str(indexOfCar + 1)])
                 writer.writerow([])
 
                 writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
@@ -166,8 +167,8 @@ def new_calculation_action(request):
                     row_count += 1
                     writer.writerow(['ROW' + str(row_count), '', '', '', '', '', '',
                                      'ROW' + str(row_count), '', '', '', '', ''])
-                    writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY', '',
-                                     'PCS', 'TH', 'W', 'L', 'Wt', 'QUANTITY'])
+                    writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QTY', '',
+                                     'PCS', 'TH', 'W', 'L', 'Wt', 'QTY'])
 
                     total_left_length = 0
                     total_right_length = 0
@@ -196,8 +197,8 @@ def new_calculation_action(request):
                                          float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
                                          rightSideTie])
 
-                    writer.writerow(['', '', '', 'total length: ', 'total weight: ', '', '',
-                                     '', '', '', 'total length: ', 'total weight: ', ''])
+                    writer.writerow(['', '', '', 'Tot.L', 'Tot.W', '', '',
+                                     '', '', '', 'Tot.L', 'Tot.W', ''])
                     writer.writerow(['', '', '', total_left_length, total_left_weight, '', '',
                                      '', '', '', total_right_length, total_right_weight, ''])
 
