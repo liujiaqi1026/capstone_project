@@ -102,8 +102,8 @@ def new_calculation_action(request):
             writer.writerow(["total loading: " + str(result[0]["load"] + result[1]["load"])])
             writer.writerow([])
 
-            total_left_side_weight = 0
-            total_right_side_weight = 0
+            total_left_side_weight_map = {}
+            total_right_side_weight_map = {}
 
             row_count_map = {}
             for indexOfCar, car in enumerate(cars):
@@ -112,6 +112,8 @@ def new_calculation_action(request):
 
                 writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
                 row_count = 0
+                total_left_side_weight = 0
+                total_right_side_weight = 0
 
                 for indexOfLayer, layer in enumerate(car[0][0]):
                     row_count += 1
@@ -160,6 +162,8 @@ def new_calculation_action(request):
                     writer.writerow([])
 
                 row_count_map[str(indexOfCar)] = row_count
+                total_left_side_weight_map[str(indexOfCar)] = total_left_side_weight
+                total_right_side_weight_map[str(indexOfCar)] = total_right_side_weight
 
                 writer.writerow([])
 
@@ -173,6 +177,8 @@ def new_calculation_action(request):
                 writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
 
                 row_count = row_count_map[str(indexOfCar)]
+                total_left_side_weight = total_left_side_weight_map[str(indexOfCar)]
+                total_right_side_weight = total_right_side_weight_map[str(indexOfCar)]
 
                 for indexOfLayer, layer in enumerate(car[0][0]):
                     row_count += 1
@@ -221,6 +227,8 @@ def new_calculation_action(request):
                         writer.writerow([])
 
                 row_count_map[str(indexOfCar)] = row_count
+                total_left_side_weight_map[str(indexOfCar)] = total_left_side_weight
+                total_right_side_weight_map[str(indexOfCar)] = total_right_side_weight
 
                 writer.writerow(['', '', '', '', 'SIDE 1 Tot.W', '', '',
                                  '', '', '', '', 'SIDE 2 Tot.W', ''])
