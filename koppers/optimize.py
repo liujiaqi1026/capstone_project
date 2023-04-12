@@ -81,11 +81,12 @@ class Railcar:
         "layout":  carlist:[single[side:[layer:[bundle(int), ],],] ,]
         "df": index: carID_sideID_layerID . column:[tie1, tie2, tie3.....]
 '''
-def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float, tie_thickness: float, weight_diff: float):
+def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float,
+             tie_thickness: float, weight_diff: float):
     result = []
     railcar_list = sorted(railcar_list, key=lambda x: x.railcar_length, reverse=True)
     solution1 = multicar_optimize(railcar_list, tie_list, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff)
-    result.append(solution1)
+
     tie_list = solution1["tie_list"]
     cnt_car = solution1["num_of_car"]
     railcar_list2 = copy.deepcopy(railcar_list)[:cnt_car]
@@ -95,18 +96,47 @@ def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bu
         railcar.railcar_height -= occupied_height[i]
     solution2 = multicar_optimize(railcar_list2, tie_list, 1, bundle_h, tie_width, tie_thickness, weight_diff)
 
+    layout1 = solution1["layout"]
     layout2 = solution2["layout"]
-    layout2_expand = copy.deepcopy(solution1["layout"])
-    # 补齐
-    for i in range(len(layout2_expand)):
-        for car_idx in range(len(layout2_expand[i])):
-            for side_idx in range(len(layout2_expand[i][car_idx])):
-                for layer_idx in range(len(layout2_expand[i][car_idx][side_idx])):
-                    layout2_expand[i][car_idx][side_idx][layer_idx] = 0
-                    print("a")
+    for i in range(len(layout1)-len(layout2)):
+        car = []
+        side1 = []
+        side2 = []
+        layer1 = [0 for _ in range(len(tie_list))]
+        layer2 = [0 for _ in range(len(tie_list))]
+        side1.append(layer1)
+        side2.append(layer2)
+        car.extend([side1, side2])
+        layout2.append([car])
+    solution2["layout"] = layout2
+    solution_combined = {}
+    solution_combined["load"] = solution1["load"] + solution2["load"]
+    layout_combined = []
+    for i in range(len(layout1)):
+        tmp = []
+        for car_idx in range(len(layout1[i])):
+            car = []
+            for side_idx in range(len(layout1[i][car_idx])):
+                side = []
+                for layer_idx in range(len(layout1[i][car_idx][side_idx])):
+                    layer = {}
+                    layer["pcs"] = bundle_h*bundle_v
+                    layer["layer"] = layout1[i][car_idx][side_idx][layer_idx]
+                    side.append(layer)
 
+                for layer_idx in range(len(layout2[i][car_idx][side_idx])):
+                    layer = {}
+                    layer["pcs"] = bundle_h
+                    layer["layer"] = layout2[i][car_idx][side_idx][layer_idx]
+                    side.append(layer)
 
-    result.append(solution2)
+                car.append(side)
+            tmp.append(car)
+        layout_combined.append(tmp)
+    solution_combined["layout"] = layout_combined
+    # result.append(solution1)
+    # result.append(solution2)
+    result.append(solution_combined)
     return result
 
 
@@ -432,6 +462,5 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
     if not success:
         raise Exception()
     return res
-
 
 
