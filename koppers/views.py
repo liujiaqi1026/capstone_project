@@ -102,12 +102,16 @@ def new_calculation_action(request):
             writer.writerow(["total loading: " + str(result[0]["load"] + result[1]["load"])])
             writer.writerow([])
 
-            row_count = 0
+            total_left_side_weight = 0
+            total_right_side_weight = 0
+
+            row_count_map = {}
             for indexOfCar, car in enumerate(cars):
                 writer.writerow([str(railcar_list[indexOfCar].railcar_length) + ' ' + 'Centerbeam No.' + str(indexOfCar + 1)])
                 writer.writerow([])
 
                 writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
+                row_count = 0
 
                 for indexOfLayer, layer in enumerate(car[0][0]):
                     row_count += 1
@@ -143,6 +147,9 @@ def new_calculation_action(request):
                                          "-" if rightSideTie == 0 else float(dropdown_box_2) * float(dropdown_box_1) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
                                          "-" if rightSideTie == 0 else rightSideTie])
 
+                    total_left_side_weight += total_left_weight
+                    total_right_side_weight += total_right_weight
+
                     writer.writerow(['', '', '', 'Tot.L', 'Tot.W', '', '',
                                      '', '', '', 'Tot.L', 'Tot.W', ''])
                     writer.writerow(['', '', '', total_left_length, total_left_weight, '', '',
@@ -151,6 +158,8 @@ def new_calculation_action(request):
                     # wait for the total weight and total length
                     writer.writerow([])
                     writer.writerow([])
+
+                row_count_map[str(indexOfCar)] = row_count
 
                 writer.writerow([])
 
@@ -162,6 +171,8 @@ def new_calculation_action(request):
                 writer.writerow([])
 
                 writer.writerow(['SIDE 1', '', '', '', '', '', '', 'SIDE 2', '', '', '', '', ''])
+
+                row_count = row_count_map[str(indexOfCar)]
 
                 for indexOfLayer, layer in enumerate(car[0][0]):
                     row_count += 1
@@ -197,15 +208,24 @@ def new_calculation_action(request):
                                          "-" if rightSideTie == 0 else float(dropdown_box_2) * float(tie_list[indexOfTie].weight_per_tie) * rightSideTie,
                                          "-" if rightSideTie == 0 else rightSideTie])
 
+                    total_left_side_weight += total_left_weight
+                    total_right_side_weight += total_right_weight
+
                     writer.writerow(['', '', '', 'Tot.L', 'Tot.W', '', '',
                                      '', '', '', 'Tot.L', 'Tot.W', ''])
                     writer.writerow(['', '', '', total_left_length, total_left_weight, '', '',
                                      '', '', '', total_right_length, total_right_weight, ''])
 
-                    # wait for the total weight and total length
-                    writer.writerow([])
-                    writer.writerow([])
+                    if indexOfLayer < len(car[0][0]) - 1:
+                        writer.writerow([])
+                        writer.writerow([])
 
+                row_count_map[str(indexOfCar)] = row_count
+
+                writer.writerow(['', '', '', '', 'SIDE 1 Tot.W', '', '',
+                                 '', '', '', '', 'SIDE 2 Tot.W', ''])
+                writer.writerow(['', '', '', '', total_left_side_weight, '', '',
+                                 '', '', '', '', total_right_side_weight, ''])
                 writer.writerow([])
 
 
