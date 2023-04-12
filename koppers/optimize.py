@@ -87,12 +87,25 @@ def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bu
     solution1 = multicar_optimize(railcar_list, tie_list, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff)
     result.append(solution1)
     tie_list = solution1["tie_list"]
-    railcar_list2 = copy.deepcopy(railcar_list)
+    cnt_car = solution1["num_of_car"]
+    railcar_list2 = copy.deepcopy(railcar_list)[:cnt_car]
     occupied_height = solution1["occupied_height"]
     for i in range(len(railcar_list2)):
         railcar = railcar_list2[i]
         railcar.railcar_height -= occupied_height[i]
     solution2 = multicar_optimize(railcar_list2, tie_list, 1, bundle_h, tie_width, tie_thickness, weight_diff)
+
+    layout2 = solution2["layout"]
+    layout2_expand = copy.deepcopy(solution1["layout"])
+    # 补齐
+    for i in range(len(layout2_expand)):
+        for car_idx in range(len(layout2_expand[i])):
+            for side_idx in range(len(layout2_expand[i][car_idx])):
+                for layer_idx in range(len(layout2_expand[i][car_idx][side_idx])):
+                    layout2_expand[i][car_idx][side_idx][layer_idx] = 0
+                    print("a")
+
+
     result.append(solution2)
     return result
 
@@ -227,6 +240,7 @@ def multicar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v
             # occupied_height.append(max_side_height)
             occupied_height[i] = max_side_height
     report["occupied_height"] = occupied_height
+    report["num_of_car"] = cnt
     return report
 
 
@@ -418,3 +432,6 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
     if not success:
         raise Exception()
     return res
+
+
+
