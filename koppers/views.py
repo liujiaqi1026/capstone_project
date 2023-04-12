@@ -6,6 +6,7 @@ import csv
 # from .Opt2_1D import Tie, Railcar, multicar_optimize
 from .optimize import optimize, Tie, Railcar
 from datetime import datetime
+import copy
 
 
 # Create your views here.
@@ -51,6 +52,7 @@ def new_calculation_action(request):
             # Do some calculations with the data
             # ...
             tie_list = []
+            temp_list = []
             tie_width = 0
             tie_thickness = 0
             tie_length = 0
@@ -69,6 +71,7 @@ def new_calculation_action(request):
                                     quantity=int(value[3]), weight_per_tie=float(text_box_6) *
                                                                            float(value[2]) * float(value[1])
                                                                            * float(value[0]) / 12))
+                temp_list = copy.deepcopy(tie_list)
 
             railcar_list = []
             for i in range(int(text_box_1)):
@@ -84,7 +87,7 @@ def new_calculation_action(request):
                               bundle_h=int(dropdown_box_1),
                               weight_diff=0.1, tie_width=tie_width, tie_thickness=tie_thickness)
 
-            print("result的结果： ", result)
+            tie_list = temp_list
 
             temp = result[0]
             cars = temp['layout']
@@ -130,6 +133,9 @@ def new_calculation_action(request):
                         rightSideTie = car[0][1][indexOfLayer]['layer'][indexOfTie]
                         right_pcs = car[0][1][indexOfLayer]['pcs']
 
+                        current_tie = tie_list[indexOfTie]
+                        current_tie.quantity = current_tie.quantity - left_pcs * leftSideTie - right_pcs * rightSideTie
+
                         total_left_length += tie_list[indexOfTie].length * leftSideTie
                         total_right_length += tie_list[indexOfTie].length * rightSideTie
                         total_left_weight += left_pcs * float(tie_list[indexOfTie].weight_per_tie) * leftSideTie
@@ -170,8 +176,15 @@ def new_calculation_action(request):
                 writer.writerow(['', '', '', '', total_left_side_weight, '', '',
                                  '', '', '', '', total_right_side_weight, ''])
 
+                # output the remain ties.
+                writer.writerow(["remain ties: "])
+                writer.writerow(["Thickness", "Width", "Length", "Quantity"])
+                for tie in tie_list:
+                    writer.writerow([str(tie.thickness), str(tie.width), str(tie.length), str(tie.quantity)])
+
                 writer.writerow([])
                 writer.writerow([])
+
 
             # writer.writerow(["SMALL PIECES: "])
             # cars = result[1]["layout"]
