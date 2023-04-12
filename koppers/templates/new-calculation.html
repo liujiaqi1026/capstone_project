@@ -92,7 +92,7 @@
         {% csrf_token %}
         <label for="csv_file">Add Tie Information (Upload CSV file):</label>
         <p class="red">Note: All input ties must have the same height and width.</p>
-        <input type="file" name="csv_file" id="csv_file">
+        <input type="file" name="csv_file" id="csv_file" accept=".csv">
         {% if form.csv_file.errors %}
             <span style="color: red">{{ form.csv_file.errors.as_text }}</span>
         {% endif %}<br><br>
