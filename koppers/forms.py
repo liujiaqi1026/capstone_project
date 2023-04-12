@@ -1,5 +1,5 @@
 from django import forms
-
+import csv
 class CSVUploadForm(forms.Form):
     csv_file = forms.FileField(label='CSV File', required=True)
     text_box_1 = forms.IntegerField(required=True)
@@ -15,4 +15,22 @@ class CSVUploadForm(forms.Form):
         if file:
             if not file.name.endswith('.csv'):
                 raise forms.ValidationError('File format must be CSV.')
+            
+            # Open file in text mode
+            data = file.read().decode('utf-8').splitlines()
+            reader = csv.reader(data)
+            headers = next(reader)  # Skip header row
+            rows = list(reader)
+            
+            # Check if all non-zero quantities have the same height and width
+            non_zero_rows = [row for row in rows if float(row[3]) != 0]
+            if non_zero_rows:
+                height = float(non_zero_rows[0][0])
+                width = float(non_zero_rows[0][1])
+                for row in non_zero_rows:
+                    if float(row[0]) != height or float(row[1]) != width:
+                        raise forms.ValidationError('All input ties must have the same height and width.')
+            
+            # Reset file pointer to beginning
+            file.seek(0)
         return file
