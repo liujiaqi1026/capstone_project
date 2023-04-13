@@ -78,10 +78,10 @@ def new_calculation_action(request):
 
             railcar_list = []
             for i in range(int(text_box_1)):
-                railcar_list.append(Railcar(length=60, height=110, width=50, loading=10000000000000))
+                railcar_list.append(Railcar(length=60, height=124, width=50, loading=10000000000000))
 
             for i in range(int(text_box_2)):
-                railcar_list.append(Railcar(length=73, height=110, width=50, loading=10000000000000))
+                railcar_list.append(Railcar(length=73, height=124, width=50, loading=10000000000000))
 
             railcar_list = sorted(railcar_list, key=lambda x: x.railcar_length, reverse=True)
 
