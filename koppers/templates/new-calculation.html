@@ -120,9 +120,20 @@
             <span style="color: red">{{ form.text_box_2.errors.as_text }}</span>
         {% endif %}<br><br>
 
+
+      <p>Bundle Size Mode:</p>
+      <div style="display: flex;">
+      <label for="option1" style="margin-right: 15px;">
+          <input type="radio" id="option1" name="radio" value="maximum" style="margin-right: 5px;">Maximum
+      </label>
+      <br>
+      <label for="option2">
+          <input type="radio" id="option2" name="radio" value="fixed" style="display: inline-block;margin-right: 5px;">Fixed
+      </label>
+      </div><br><br>
         <label>Bundle Size (Height x Width):</label>
 
-        <p class="red">Note: Please input the maximum bundle size you want.</p>
+{#        <p class="red">Note: Please input the maximum bundle size you want.</p>#}
         <select name="dropdown_box_1">
         {% for i in '123456' %}
             <option value="{{ i }}" {% if i == '5' %}selected{% endif %}>{{ i }}</option>
