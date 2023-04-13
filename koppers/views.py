@@ -7,6 +7,7 @@ import csv
 from .optimize import optimize, Tie, Railcar
 from datetime import datetime
 import copy
+import time
 
 
 # Create your views here.
@@ -28,6 +29,7 @@ def dashboard_admin_action(request):
 
 
 def new_calculation_action(request):
+    start_time = time.time()
     if request.method == 'POST':
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -90,6 +92,7 @@ def new_calculation_action(request):
                               bundle_h=int(dropdown_box_1),
                               weight_diff=0.1, tie_width=tie_width, tie_thickness=tie_thickness,isIterate=is_iterate)
 
+            end_time = time.time()
             tie_list = temp_list
 
             temp = result[0]
@@ -108,6 +111,7 @@ def new_calculation_action(request):
             writer.writerow([("number of 73 Centerbeam: " + str(text_box_2))])
             writer.writerow([("note: " + str(text_box_5))])
             writer.writerow(["total loading: " + str(result[0]["load"])])
+            writer.writerow(["running time: " + str(end_time - start_time)])
             writer.writerow([])
 
             for indexOfCar, car in enumerate(cars):
@@ -272,6 +276,7 @@ def new_calculation_action(request):
                 'max_loading': str(result[0]["load"]),
                 'layout_result': temp["layout"],
                 'csv_content': csv_content,
+                "time": str(end_time - start_time),
             }
             return render(request, 'calculation-result.html', context)
     else:
