@@ -94,7 +94,7 @@ def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bu
                 res_list.append(fixed_optimize(railcar_list_copy, tie_list_copy, v, bundle_h, tie_width, tie_thickness, weight_diff, small_v))
         res = None
         for res_i in res_list:
-            if res is None or res_i[0]["load"] > res[0]["load"]:
+            if res is None or res_i[0]["load"] >= res[0]["load"]:
                 res = res_i
         return res
 
@@ -243,7 +243,7 @@ def multicar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v
     print("remain: ")
     for tie in tie_list:
         print(tie)
-    print("Max Load:" + str(int(-obj)))
+    print("Max Load:" + str(int(obj)))
     # print(result)
 
     df = pd.DataFrame(columns=["Tie" + str(i + 1) for i in range(len(tie_list))])
@@ -267,7 +267,7 @@ def multicar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v
     print(df)
     report = {}
     # obj: max_load
-    report["load"] = -obj
+    report["load"] = obj
     # result
     report["layout"] = result
     # df
