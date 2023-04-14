@@ -28,7 +28,7 @@ class Tie:
 
     def __str__(self):
         return "length: " + str(self.length) + " width: " + str(self.width) \
-               + " thickness: " + str(self.thickness) + " quantity: " + str(self.quantity)
+               + " thickness: " + str(self.thickness) + " quantity: " + str(self.quantity) + " weight_per_tie: "+str(self.weight_per_tie)
 
 
 class Layer:
@@ -70,7 +70,7 @@ class Railcar:
         self.side_b.init(tie_list, layer_num)
 
     def __str__(self):
-        return "length: " + str(self.railcar_length)
+        return "length: " + str(self.railcar_length)+" height: "+ str(self.railcar_height)+" width: "+ str(self.railcar_width)+" loading: "+ str(self.railcar_loading)
 
 
 '''
@@ -85,6 +85,20 @@ class Railcar:
 '''
 def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float,
              tie_thickness: float, weight_diff: float, isIterate: bool):
+    print("Ties:")
+    for tie in tie_list:
+        print(tie)
+    print("Cars:")
+    for car in railcar_list:
+        print(car)
+    print("bundle_v:" + str(bundle_v))
+    print("bundle_h:" + str(bundle_h))
+    print("weight_diff: " + str(weight_diff))
+    print("tie_width:" + str(tie_width))
+    print("tie_thickness:"+str(tie_thickness))
+
+    for tie in tie_list:
+        print(tie)
     if isIterate:
         res_list = []
         for v in range(2, bundle_v+1):
@@ -92,6 +106,22 @@ def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bu
                 railcar_list_copy = copy.deepcopy(railcar_list)
                 tie_list_copy = copy.deepcopy(tie_list)
                 res_list.append(fixed_optimize(railcar_list_copy, tie_list_copy, v, bundle_h, tie_width, tie_thickness, weight_diff, small_v))
+
+        for res in res_list:
+            load = 0
+            solution = res[0]
+            layout = solution["layout"]
+
+            for i in range(len(layout)):
+                for car in layout[i]:
+                    for side in car:
+                        for layer in side:
+                            pcs = layer["pcs"]
+                            x = layer["layer"]
+                            for j in range(len(x)):
+                                load += x[j]*pcs*tie_list[j].weight_per_tie
+            res[0]["load"] = load
+
         res = None
         for res_i in res_list:
             if res is None or res_i[0]["load"] >= res[0]["load"]:
@@ -132,7 +162,6 @@ def fixed_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: i
         layout2.append([car])
     solution2["layout"] = layout2
     solution_combined = {}
-    solution_combined["load"] = solution1["load"] + solution2["load"]
     layout_combined = []
     for i in range(len(layout1)):
         tmp = []
@@ -212,8 +241,7 @@ def multicar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v
         except Exception as e:
             print(e)
             break
-        obj += res["obj"]
-        print(res["obj"])
+
         res_x = res["x"]
         result.append(res_x)
         cnt += 1
@@ -266,8 +294,6 @@ def multicar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v
     print("--------------------------------------------------")
     print(df)
     report = {}
-    # obj: max_load
-    report["load"] = obj
     # result
     report["layout"] = result
     # df
@@ -302,7 +328,6 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
              for car_id in range(len(railcar_list))]
         return {"obj": 0, "x": x}
     res = {}
-    res["obj"] = 0
     railcar_list_copy = copy.deepcopy(railcar_list)
     tie_list_copy = copy.deepcopy(tie_list)
 
@@ -310,7 +335,6 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
     for idx in range(layer_nums_limit):
         try:
             res_layer = singlelayer_optimize(railcar_list_copy, tie_list_copy, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff)
-            res["obj"] = res["obj"] + res_layer["obj"]
             x = res_layer["x"]
             for car_id in range(len(x)):
                 for layer_id in range(len(x[car_id][0])):
