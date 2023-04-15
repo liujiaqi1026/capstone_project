@@ -186,9 +186,16 @@ def new_calculation_action(request):
                 # output the remain ties.
                 writer.writerow(["remain ties: "])
                 writer.writerow(["Thickness", "Width", "Length", "Quantity"])
+
+                remaining_weight = 0
+                truck_needed = 0
                 for tie in tie_list:
                     writer.writerow([str(tie.thickness), str(tie.width), str(tie.length), str(tie.quantity)])
+                    remaining_weight += tie.weight_per_tie * tie.quantity
+                truck_needed = remaining_weight / 45000
 
+                writer.writerow(["remaining total weight: " + str(remaining_weight)])
+                writer.writerow(["truck needed: " + str(truck_needed)])
                 writer.writerow([])
                 writer.writerow([])
 
