@@ -422,13 +422,13 @@ def singlelayer_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundl
             x_list = layouts[car_id][0][layer_id]
             tmp = [m.Intermediate(x_list[i] * tie_list[i].length) for i in range(len(x_list))]
             m.Equation(
-                m.sum(tmp) * (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
+                (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
         # side 2
         for layer_id in range(layer_nums[car_id]):
             x_list = layouts[car_id][1][layer_id]
             tmp = [m.Intermediate(x_list[i] * tie_list[i].length) for i in range(len(x_list))]
             m.Equation(
-                m.sum(tmp) * (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
+                (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
 
     # Constraint2: Total Length
     for car_id in range(car_num):
@@ -549,3 +549,30 @@ def singlelayer_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundl
         raise Exception("Load quantity exceeds")
     res = {"obj": load, "x": x}
     return res
+
+#
+#
+# wf = 5.35
+# tie_l = [11.0, 13.0, 14.0, 15.0, 16.0, 24.0]
+# quantity = [180, 25, 115, 75, 60, 20]
+# tie_list = []
+# for i in range(len(tie_l)):
+#     l = tie_l[i]
+#     w = 9.0
+#     th = 7.0
+#     q = quantity[i]
+#     wpt = l*w*th/12*wf
+#     tie = Tie(length = l, width=w, thickness=th, quantity=q, weight_per_tie=wpt)
+#     tie_list.append(tie)
+#
+# railcar_list = [Railcar(length=73, height=124, width=50, loading=10000000000000) for _ in range(1)]#
+#
+# load = 0
+# for tie in tie_list:
+#     load += tie.weight_per_tie * tie.quantity
+# print("Tie we have: " + str(load))
+#
+#
+# a = optimize(railcar_list=railcar_list, tie_list=tie_list, bundle_v=5, bundle_h=5, weight_diff=0.01, tie_width=9,
+#          tie_thickness=7, isIterate=True)
+# print(a)
