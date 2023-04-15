@@ -422,13 +422,13 @@ def singlelayer_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundl
             x_list = layouts[car_id][0][layer_id]
             tmp = [m.Intermediate(x_list[i] * tie_list[i].length) for i in range(len(x_list))]
             m.Equation(
-                m.sum(tmp) * (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 18/12 - railcar_list[car_id].railcar_length) >= 0)
+                m.sum(tmp) * (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
         # side 2
         for layer_id in range(layer_nums[car_id]):
             x_list = layouts[car_id][1][layer_id]
             tmp = [m.Intermediate(x_list[i] * tie_list[i].length) for i in range(len(x_list))]
             m.Equation(
-                m.sum(tmp) * (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 18/12 - railcar_list[car_id].railcar_length) >= 0)
+                m.sum(tmp) * (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
 
     # Constraint2: Total Length
     for car_id in range(car_num):
