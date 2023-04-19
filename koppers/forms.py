@@ -9,6 +9,7 @@ class CSVUploadForm(forms.Form):
     text_box_5 = forms.CharField(required=False, label='Text Box 5', max_length=100)
     text_box_6 = forms.DecimalField(required=True) # weight factor
     radio = forms.CharField(required=True, max_length=100)
+    debug_radio = forms.CharField(required=True, max_length=100)
 
     # Add a clean method for csv_file field to validate file format
     def clean_csv_file(self):

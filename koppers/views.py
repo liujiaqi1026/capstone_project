@@ -51,7 +51,10 @@ def new_calculation_action(request):
             text_box_5 = form.cleaned_data['text_box_5']
             text_box_6 = form.cleaned_data['text_box_6']
             radio = form.cleaned_data['radio']
+            debug_radio = form.cleaned_data['debug_radio']
+
             is_iterate = True if radio == "maximum" else False
+            solver_type = True if debug_radio == 'restricted' else False
 
 
             # Do some calculations with the data
@@ -90,7 +93,8 @@ def new_calculation_action(request):
             # todo: v 和 h 是否对应box2 和 box1
             result = optimize(railcar_list=railcar_list, tie_list=tie_list, bundle_v=int(dropdown_box_2),
                               bundle_h=int(dropdown_box_1),
-                              weight_diff=0.01, tie_width=tie_width, tie_thickness=tie_thickness,isIterate=is_iterate, debug=True)
+                              weight_diff=0.01, tie_width=tie_width, tie_thickness=tie_thickness,
+                              isIterate=is_iterate, debug=solver_type)
 
             end_time = time.time()
             tie_list = temp_list

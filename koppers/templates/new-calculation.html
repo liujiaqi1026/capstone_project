@@ -120,6 +120,16 @@
             <span style="color: red">{{ form.text_box_2.errors.as_text }}</span>
         {% endif %}<br><br>
 
+      <p>Solver Mode:</p>
+      <div style="display: flex;">
+      <label for="option3" style="margin-right: 15px;">
+          <input type="radio" id="option3" name="debug_radio" value="restricted" style="margin-right: 5px;">Restricted
+      </label>
+      <br>
+      <label for="option4">
+          <input type="radio" id="option4" name="debug_radio" value="relaxed" style="display: inline-block;margin-right: 5px;">Relaxed
+      </label>
+      </div><br><br>
 
       <p>Bundle Size Mode:</p>
       <div style="display: flex;">
