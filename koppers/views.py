@@ -90,7 +90,7 @@ def new_calculation_action(request):
             # todo: v 和 h 是否对应box2 和 box1
             result = optimize(railcar_list=railcar_list, tie_list=tie_list, bundle_v=int(dropdown_box_2),
                               bundle_h=int(dropdown_box_1),
-                              weight_diff=0.01, tie_width=tie_width, tie_thickness=tie_thickness,isIterate=is_iterate)
+                              weight_diff=0.01, tie_width=tie_width, tie_thickness=tie_thickness,isIterate=is_iterate, debug=True)
 
             end_time = time.time()
             tie_list = temp_list

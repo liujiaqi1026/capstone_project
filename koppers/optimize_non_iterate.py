@@ -84,7 +84,7 @@ class Railcar:
         "df": index: carID_sideID_layerID . column:[tie1, tie2, tie3.....]
 '''
 def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float,
-             tie_thickness: float, weight_diff: float, isIterate: bool, debug: bool):
+             tie_thickness: float, weight_diff: float, isIterate: bool):
     print("Ties:")
     for tie in tie_list:
         print(tie)
@@ -97,10 +97,6 @@ def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bu
     print("tie_width:" + str(tie_width))
     print("tie_thickness:"+str(tie_thickness))
 
-    if not debug:
-        tie_list.reverse()
-
-
     for tie in tie_list:
         print(tie)
     if isIterate:
@@ -109,40 +105,38 @@ def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bu
             for small_v in range(1, v):
                 railcar_list_copy = copy.deepcopy(railcar_list)
                 tie_list_copy = copy.deepcopy(tie_list)
-                solution = fixed_optimize(railcar_list_copy, tie_list_copy, v, bundle_h, tie_width, tie_thickness, weight_diff, small_v, debug)
-                if not debug:
-                    layout = solution[0]["layout"]
-                    for i in range(len(layout)):
-                        tmp1 = layout[i]
-                        for j in range(len(tmp1)):
-                            tmp2 = tmp1[j]
-                            for k in range(len(tmp2)):
-                                tmp3 = tmp2[k]
-                                for p in range(len(tmp3)):
-                                    dict = tmp3[p]
-                                    layer = dict['layer']
-                                    layer.reverse()
-                    res_list.append(solution)
+                res_list.append(fixed_optimize(railcar_list_copy, tie_list_copy, v, bundle_h, tie_width, tie_thickness, weight_diff, small_v))
+
+        for res in res_list:
+            load = 0
+            solution = res[0]
+            layout = solution["layout"]
+
+            for i in range(len(layout)):
+                for car in layout[i]:
+                    for side in car:
+                        for layer in side:
+                            pcs = layer["pcs"]
+                            x = layer["layer"]
+                            for j in range(len(x)):
+                                load += x[j]*pcs*tie_list[j].weight_per_tie
+            res[0]["load"] = load
 
         res = None
         for res_i in res_list:
-            if res is None or (res_i[0]["load"] >= res[0]["load"] and res_i[0]["layer_num"] <= res[0]["layer_num"]):
+            if res is None or res_i[0]["load"] >= res[0]["load"]:
                 res = res_i
         return res
 
     else:
-        railcar_list_copy = copy.deepcopy(railcar_list)
-        tie_list_copy = copy.deepcopy(tie_list)
-        return fixed_optimize(railcar_list_copy, tie_list_copy, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff, 0, debug)
+        return fixed_optimize(railcar_list, tie_list, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff, 0)
 
 def fixed_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float,
-             tie_thickness: float, weight_diff: float, small_bundle_v: int, debug: bool):
+             tie_thickness: float, weight_diff: float, small_bundle_v: int):
     result = []
-    solution1 = multicar_optimize(railcar_list, tie_list, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff, debug)
+    solution1 = multicar_optimize(railcar_list, tie_list, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff)
     if small_bundle_v == 0:
-        solution_combined = combineSolution(solution1, {"layout":[]}, tie_list, bundle_v, bundle_h, small_bundle_v)
-        result.append(solution_combined)
-        result = reformat(result, tie_list)
+        result.append(solution1)
         return result
 
     tie_list = solution1["tie_list"]
@@ -152,14 +146,8 @@ def fixed_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: i
     for i in range(len(railcar_list2)):
         railcar = railcar_list2[i]
         railcar.railcar_height -= occupied_height[i]
-    solution2 = multicar_optimize(railcar_list2, tie_list, small_bundle_v, bundle_h, tie_width, tie_thickness, weight_diff, debug)
-    solution_combined = combineSolution(solution1, solution2, tie_list, bundle_v, bundle_h, small_bundle_v)
-    result.append(solution_combined)
+    solution2 = multicar_optimize(railcar_list2, tie_list, small_bundle_v, bundle_h, tie_width, tie_thickness, weight_diff)
 
-    result = reformat(result, tie_list)
-    return result
-
-def combineSolution(solution1, solution2, tie_list, bundle_v, bundle_h, small_bundle_v):
     layout1 = solution1["layout"]
     layout2 = solution2["layout"]
     for i in range(len(layout1) - len(layout2)):
@@ -188,10 +176,8 @@ def combineSolution(solution1, solution2, tie_list, bundle_v, bundle_h, small_bu
                     side.append(layer)
 
                 for layer_idx in range(len(layout2[i][car_idx][side_idx])):
-                    if bundle_h * small_bundle_v == 0:
-                        break
                     layer = {}
-                    layer["pcs"] = bundle_h * small_bundle_v
+                    layer["pcs"] = bundle_h
                     layer["layer"] = layout2[i][car_idx][side_idx][layer_idx]
                     side.append(layer)
 
@@ -199,30 +185,14 @@ def combineSolution(solution1, solution2, tie_list, bundle_v, bundle_h, small_bu
             tmp.append(car)
         layout_combined.append(tmp)
     solution_combined["layout"] = layout_combined
-    return solution_combined
-
-
-def reformat(result, tie_list):
-    load = 0
-    solution = result[0]
-    layout = solution["layout"]
-    layer_num = 0
-    for i in range(len(layout)):
-        for car in layout[i]:
-            for side in car:
-                for layer in side:
-                    layer_num += 1
-                    pcs = layer["pcs"]
-                    x = layer["layer"]
-                    for j in range(len(x)):
-                        load += x[j] * pcs * tie_list[j].weight_per_tie
-    result[0]["load"] = load
-    result[0]["layer_num"] = layer_num
+    # result.append(solution1)
+    # result.append(solution2)
+    result.append(solution_combined)
     return result
 
 
 def multicar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float,
-                      tie_thickness: float, weight_diff: float, debug: bool):
+                      tie_thickness: float, weight_diff: float):
     result = []
     obj = 0
     cnt = 0
@@ -267,7 +237,7 @@ def multicar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v
         railcar_list_tmp = [railcar]
         try:
             res = singlecar_optimize(railcar_list_tmp, tie_list, bundle_v, bundle_h, tie_width, tie_thickness,
-                                     weight_diff, debug)
+                                     weight_diff)
         except Exception as e:
             print(e)
             break
@@ -350,7 +320,7 @@ def multicar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v
 
 
 def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float,
-                       tie_thickness: float, weight_diff: float, debug: bool):
+                       tie_thickness: float, weight_diff: float):
     layer_nums_limit = int(railcar_list[0].railcar_height // (bundle_v * tie_thickness + 2))
     if layer_nums_limit == 0:
         x = [[[[0 for tie_id in range(len(tie_list))]],
@@ -364,7 +334,7 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
     layout = [[[],[]] for _ in range(len(railcar_list))]
     for idx in range(layer_nums_limit):
         try:
-            res_layer = singlelayer_optimize(railcar_list_copy, tie_list_copy, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff, debug)
+            res_layer = singlelayer_optimize(railcar_list_copy, tie_list_copy, bundle_v, bundle_h, tie_width, tie_thickness, weight_diff)
             x = res_layer["x"]
             for car_id in range(len(x)):
                 for layer_id in range(len(x[car_id][0])):
@@ -391,7 +361,7 @@ def singlecar_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_
 
 
 def singlelayer_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float,
-                       tie_thickness: float, weight_diff: float, debug: bool):
+                       tie_thickness: float, weight_diff: float):
     # check
     if weight_diff > 1:
         raise Exception("Weight Difference can not be larger than 100%")
@@ -433,15 +403,15 @@ def singlelayer_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundl
                for car_id in range(car_num)]
     m.solver_options = ['minlp_maximum_iterations 5000',
                         # minlp iterations with integer solution
-                        'minlp_max_iter_with_int_sol 2000',
+                        'minlp_max_iter_with_int_sol 1000',
                         # treat minlp as nlp
                         'minlp_as_nlp 0',
                         # nlp sub-problem max iterations
-                        'nlp_maximum_iterations 500',
+                        'nlp_maximum_iterations 50',
                         # 1 = depth first, 2 = breadth first
                         'minlp_branch_method 1',
                         # maximum deviation from whole number
-                        'minlp_integer_tol 0.01',
+                        'minlp_integer_tol 0.05',
                         # covergence tolerance
                         'minlp_gap_tol 0.01']
 
@@ -452,13 +422,13 @@ def singlelayer_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundl
             x_list = layouts[car_id][0][layer_id]
             tmp = [m.Intermediate(x_list[i] * tie_list[i].length) for i in range(len(x_list))]
             m.Equation(
-                (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
+                m.sum(tmp) * (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
         # side 2
         for layer_id in range(layer_nums[car_id]):
             x_list = layouts[car_id][1][layer_id]
             tmp = [m.Intermediate(x_list[i] * tie_list[i].length) for i in range(len(x_list))]
             m.Equation(
-                (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
+                m.sum(tmp) * (m.sum(tmp) + (m.sum(x_list) - 2) * 6/12 + 48/12 - railcar_list[car_id].railcar_length) >= 0)
 
     # Constraint2: Total Length
     for car_id in range(car_num):
@@ -506,13 +476,13 @@ def singlelayer_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundl
         side1_tmp = []
         for layer_id in range(layer_nums[car_id]):
             x_list = layouts[car_id][0][layer_id]
-            side1_tmp.extend([m.Intermediate(x_list[i] * tie_list[i].length) for i in
+            side1_tmp.extend([m.Intermediate(x_list[i] * bundle_h * bundle_v * tie_list[i].weight_per_tie) for i in
                               range(len(x_list))])
         # side2
         side2_tmp = []
         for layer_id in range(layer_nums[car_id]):
             x_list = layouts[car_id][1][layer_id]
-            side2_tmp.extend([m.Intermediate(x_list[i] * tie_list[i].length) for i in
+            side2_tmp.extend([m.Intermediate(x_list[i] * bundle_h * bundle_v * tie_list[i].weight_per_tie) for i in
                               range(len(x_list))])
         m.Equation(m.sum(side1_tmp) - m.sum(side2_tmp) <= weight_diff * (m.sum(side1_tmp) + m.sum(side2_tmp)))
         m.Equation(m.sum(side2_tmp) - m.sum(side1_tmp) <= weight_diff * (m.sum(side1_tmp) + m.sum(side2_tmp)))
@@ -524,15 +494,15 @@ def singlelayer_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundl
         # side1
         for layer_id in range(layer_nums[car_id]):
             x_list = layouts[car_id][0][layer_id]
-            total_load_tmp.extend([m.Intermediate(x_list[i] * tie_list[i].length) for i in
+            total_load_tmp.extend([m.Intermediate(x_list[i] * bundle_h * bundle_v * tie_list[i].weight_per_tie) for i in
                                    range(len(x_list))])
         # side2
         for layer_id in range(layer_nums[car_id]):
             x_list = layouts[car_id][1][layer_id]
-            total_load_tmp.extend([m.Intermediate(x_list[i] * tie_list[i].length) for i in
+            total_load_tmp.extend([m.Intermediate(x_list[i] * bundle_h * bundle_v * tie_list[i].weight_per_tie) for i in
                                    range(len(x_list))])
     m.Maximize(m.sum(total_load_tmp))
-    m.solve(disp=True, debug=debug)
+    m.solve(disp=False, debug=False)
 
     for car_id in range(car_num):
         for layer_id in range(layer_nums[car_id]):
@@ -577,8 +547,5 @@ def singlelayer_optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundl
                     success = False
     if not success:
         raise Exception("Load quantity exceeds")
-    if load == 0:
-        raise Exception("Empty layout")
     res = {"obj": load, "x": x}
     return res
-
