@@ -126,8 +126,8 @@ def new_calculation_action(request):
                 for indexOfLayer, layer in enumerate(car[0][0]):
                     writer.writerow(['ROW' + str(indexOfLayer + 1), '', '', '', '', '', '',
                                      'ROW' + str(indexOfLayer + 1), '', '', '', '', ''])
-                    writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QTY', '',
-                                     'PCS', 'TH', 'W', 'L', 'Wt', 'QTY'])
+                    writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QTY of BUN', '',
+                                     'PCS', 'TH', 'W', 'L', 'Wt', 'QTY of BUN'])
 
                     total_left_length = 0
                     total_right_length = 0
@@ -217,8 +217,8 @@ def new_calculation_action(request):
             #         row_count += 1
             #         writer.writerow(['ROW' + str(row_count), '', '', '', '', '', '',
             #                          'ROW' + str(row_count), '', '', '', '', ''])
-            #         writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QTY', '',
-            #                          'PCS', 'TH', 'W', 'L', 'Wt', 'QTY'])
+            #         writer.writerow(['PCS', 'TH', 'W', 'L', 'Wt', 'QTY of BUN', '',
+            #                          'PCS', 'TH', 'W', 'L', 'Wt', 'QTY of BUN'])
             #
             #         total_left_length = 0
             #         total_right_length = 0
