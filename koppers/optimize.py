@@ -122,7 +122,7 @@ def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bu
                                     dict = tmp3[p]
                                     layer = dict['layer']
                                     layer.reverse()
-                    res_list.append(solution)
+                res_list.append(solution)
 
         res = None
         for res_i in res_list:
