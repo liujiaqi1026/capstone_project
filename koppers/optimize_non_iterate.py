@@ -11,7 +11,12 @@ import math
 ## MINLP: Mixed Integer Nonlinear Program
 ## APOPT : Advanced Process Optimization
 
-
+'''
+    Some Object definition.
+'''
+'''
+    Tie is the fundamental element, has some attributes
+'''
 class Tie:
     width: float
     thickness: float
@@ -30,7 +35,17 @@ class Tie:
         return "length: " + str(self.length) + " width: " + str(self.width) \
                + " thickness: " + str(self.thickness) + " quantity: " + str(self.quantity) + " weight_per_tie: "+str(self.weight_per_tie)
 
-
+'''
+    tie_list: a list of tie Object, each tie response to a type of bundle, this bundle is made of same tie type.
+              usually the list contains all the tie types.
+    bundle_nums: the counterpart number of bundles
+    
+    For example:
+    The task need to load four types
+    the tie_list is [TieA, TieB, TieC, TieD]
+    the bundle_nums is [1, 2, 3, 0]
+    This means the layer contains 1 bundle of A, 2 bundles of B, 3 bundles of C, not for D
+'''
 class Layer:
     layer_height: float
     tie_list: List[Tie] = []
@@ -40,7 +55,9 @@ class Layer:
         self.tie_list = tie_list_.copy()
         self.bundle_nums = [0 for _ in range(len(tie_list_))]
 
-
+'''
+    Side contains a list of layer.
+'''
 class Side:
     side_width: float
     layers: List[Layer]
@@ -50,7 +67,10 @@ class Side:
         for layer in self.layers:
             layer.init_tie(tie_list)
 
-
+'''
+    Railcar has some basic attributes including length, width, length
+    And it's layout is represented by 2 side.
+'''
 class Railcar:
     railcar_length: float
     railcar_height: float
@@ -78,10 +98,29 @@ class Railcar:
     big-bundle = solution[0]
     small-bundle = solution[1]
 
-    big-bundle is a diction including:
+    big-bundle is a dictionary including:
         "load": total laoding
         "layout":  carlist:[single[side:[layer:[bundle(int), ],],] ,]
         "df": index: carID_sideID_layerID . column:[tie1, tie2, tie3.....]
+'''
+
+'''
+    optimize() is the exposed API to view.py
+    Depends on isIterater parameter, it uses different fix_optimized() method.
+    
+    railcar_list: a list of railcar. Each is one specific railcar (same type of car is redeemed different)
+    tie_list: a list of tie. Each is one type of tie. The quantity is one attribute of tie
+    bundle_v: bundle vertical tie num. That represents how many stacks can make one bundle.
+    bundle_h: bundle horizontal tie num. That represents a stack is composed of how many ties are placed side by side
+        For example, the bundle is consisted of 5*4=20 ties, that means bundle_h=4, bundle_v=4.
+    tie_width: the width of all ties
+    tie_thickness: the thickness of all ties
+        Because all the ties should have same width and thickness, these two parameters is used for checking
+    weight_diff: desired weight difference of two side. weight_diff = abs(left-right)/(left + right)
+        By default this value is 0.01, and we do not support customized parameter for this
+    is
+    
+    
 '''
 def optimize(railcar_list: List[Railcar], tie_list: List[Tie], bundle_v: int, bundle_h: int, tie_width: float,
              tie_thickness: float, weight_diff: float, isIterate: bool):
